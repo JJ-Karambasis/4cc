@@ -623,7 +623,7 @@ default_4coder_initialize(Application_Links *app, String_Const_u8_Array file_nam
     Scratch_Block scratch(app);
     
     load_config_and_apply(app, &global_config_arena, override_font_size, override_hinting);
-    
+
     String_Const_u8 bindings_file_name = string_u8_litexpr("bindings.4coder");
     String_Const_u8 mapping = def_get_config_string(scratch, vars_save_string_lit("mapping"));
     

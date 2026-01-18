@@ -516,6 +516,38 @@ run_lister(Application_Links *app, Lister *lister){
                         lister_activate(app, lister, user_data, false);
                         result = ListerActivation_Finished;
                     }break;
+
+					case KeyCode_I: {
+						if (has_modifier(&in.event.key.modifiers, KeyCode_Alt)) {
+							if (lister->handlers.navigate != 0){
+								lister->handlers.navigate(app, view, lister, -1);
+							}
+							else if (lister->handlers.key_stroke != 0){
+								result = lister->handlers.key_stroke(app);
+							}
+							else{
+								handled = false;
+							}
+						} else {
+							handled = false;
+						} 
+					} break;
+
+					case KeyCode_K: {
+						if (has_modifier(&in.event.key.modifiers, KeyCode_Alt)) {
+							if (lister->handlers.navigate != 0){
+								lister->handlers.navigate(app, view, lister, 1);
+							}
+							else if (lister->handlers.key_stroke != 0){
+								result = lister->handlers.key_stroke(app);
+							}
+							else{
+								handled = false;
+							}
+						} else {
+							handled = false;
+						} 
+					} break;
                     
                     case KeyCode_Backspace:
                     {

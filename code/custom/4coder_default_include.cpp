@@ -65,6 +65,8 @@
 #include "4coder_tutorial.h"
 #include "4coder_search_list.h"
 
+#include "4coder_jj/4coder_jj_custom.h"
+
 ////////////////////////////////
 
 #include "4coder_base_types.cpp"
@@ -145,6 +147,9 @@
 #include "4coder_examples.cpp"
 
 #include "4coder_default_hooks.cpp"
+
+#include "4coder_fleury/4coder_fleury.cpp"
+#include "4coder_jj/4coder_jj_custom.cpp"
 
 #endif
 

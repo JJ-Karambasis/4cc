@@ -126,6 +126,20 @@ prj_v1_parse_from_config(Application_Links *app, Arena *arena, String8 dir, Conf
             }
         }
     }
+
+	//blacklist_paths
+	{
+		Config_Compound *compound = 0;
+		if (config_compound_var(parsed, "blacklist_path", 0, &compound)){
+			Config_Get_Result_List list = typed_string_array_reference_list(arena, parsed, compound);
+			for (Config_Get_Result_Node *cfg_node = list.first;
+				cfg_node != 0;
+				cfg_node = cfg_node->next){
+				String_Const_u8 str = push_string_copy(arena, cfg_node->result.string);
+				string_list_push(arena, &project->blacklist_path_list, str);
+			}
+		}
+	}
     
     // command_list
     {

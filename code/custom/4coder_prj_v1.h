@@ -44,6 +44,7 @@ struct Prj_V1{
     Prj_Pattern_List pattern_list;
     Prj_Pattern_List blacklist_pattern_list;
     Prj_V1_File_Load_Path_Array load_path_array;
+	String8List blacklist_path_list;
     Prj_V1_Command_Array command_array;
     
     i32 fkey_commands[16];

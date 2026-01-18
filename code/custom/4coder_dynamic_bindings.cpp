@@ -47,9 +47,6 @@ dynamic_binding_load_from_file(Application_Links *app, Mapping *mapping, String_
         if (parsed != 0){
             result = true;
             
-			Thread_Context* tctx = get_thread_context(app);
-			mapping_release(tctx, mapping);
-			mapping_init(tctx, mapping);
 			MappingScope();
 			SelectMapping(mapping);
             

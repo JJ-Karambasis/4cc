@@ -1,0 +1,59 @@
+// raddbg 0.9.25 project file
+
+recent_file: path: "code/custom/4coder_jj/4coder_jj_custom.cpp"
+recent_file: path: "code/custom/4coder_draw.cpp"
+recent_file: path: "code/custom/4coder_base_types.cpp"
+recent_file: path: "code/custom/4coder_fancy.cpp"
+recent_file: path: "code/custom/4coder_fleury/4coder_fleury_power_mode.cpp"
+recent_file: path: "code/custom/4coder_fleury/4coder_fleury_brace.cpp"
+recent_file: path: "code/custom/4coder_fleury/4coder_fleury_code_peek.cpp"
+recent_file: path: "code/custom/4coder_lister_base.cpp"
+recent_file: path: "code/custom/4coder_events.cpp"
+recent_file: path: "code/custom/4coder_helper.cpp"
+recent_file: path: "code/custom/4coder_jump_sticky.cpp"
+recent_file: path: "code/custom/4coder_default_framework.cpp"
+recent_file: path: "code/custom/4coder_fleury/4coder_fleury_error_annotations.cpp"
+recent_file: path: "code/custom/4coder_fleury/4coder_fleury_render_helpers.cpp"
+recent_file: path: "code/custom/4coder_fleury/4coder_fleury_hooks.cpp"
+recent_file: path: "code/custom/jj/4coder_jj_custom.cpp"
+recent_file: path: "code/custom/4coder_lists.cpp"
+recent_file: path: "code/custom/4coder_config.cpp"
+recent_file: path: "code/custom/4coder_default_colors.cpp"
+recent_file: path: "code/custom/jj/4coder_jj_colors.cpp"
+recent_file: path: "code/custom/4coder_project_commands.cpp"
+recent_file: path: "code/custom/4coder_prj_v1.cpp"
+recent_file: path: "code/custom/4coder_default_hooks.cpp"
+recent_file: path: "code/4ed_file.cpp"
+recent_file: path: "code/platform_win32/win32_4ed.cpp"
+recent_file: path: "code/4ed_working_set.cpp"
+recent_file: path: "code/custom/4coder_system_helpers.cpp"
+recent_file: path: "code/platform_win32/win32_audio.cpp"
+recent_file: path: "code/4ed_coroutine.cpp"
+recent_file: path: "code/custom/4coder_default_bindings.cpp"
+recent_file: path: "code/custom/4coder_custom_commands.cpp"
+target:
+{
+  executable: "build/4ed.exe"
+  working_directory: "../constructs"
+  arguments: "-W"
+}
+debug_info:
+{
+  path: "C:/Users/akara/Projects/4cc/build/4ed.pdb"
+  timestamp: 66204132477660
+}
+debug_info:
+{
+  path: "C:/Users/akara/Projects/4cc/build/4ed_app.pdb"
+  timestamp: 66204132477026
+}
+debug_info:
+{
+  path: "C:/Users/akara/Projects/4cc/build/custom_4coder.pdb"
+  timestamp: 66204132476565
+}
+breakpoint:
+{
+  source_location: "code/custom/4coder_lister_base.cpp:543:22"
+  hit_count: 0
+}

@@ -60,6 +60,20 @@ prj_match_in_pattern_list(String8 string, Prj_Pattern_List list){
     return(found_match);
 }
 
+function b32
+string8_match_in_list(String8 string, String8List list) {
+	b32 found_match = false;
+    for (String8Node *node = list.first;
+		node != 0;
+		node = node->next){
+        if (string_match(node->string, string, StringMatch_Exact)){
+            found_match = true;
+            break;
+        }
+    }
+    return(found_match);
+}
+
 function void
 prj_close_files_with_ext(Application_Links *app, String8Array extension_array){
     Scratch_Block scratch(app);
@@ -109,7 +123,7 @@ prj_close_files_with_ext(Application_Links *app, String8Array extension_array){
 }
 
 function void
-prj_open_files_pattern_filter__rec(Application_Links *app, String8 path, Prj_Pattern_List whitelist, Prj_Pattern_List blacklist, Prj_Open_File_Flags flags){
+prj_open_files_pattern_filter__rec(Application_Links *app, String8 path, Prj_Pattern_List whitelist, Prj_Pattern_List blacklist, String8List blacklist_paths, Prj_Open_File_Flags flags){
     Scratch_Block scratch(app);
     
     ProfileScopeNamed(app, "get file list", profile_get_file_list);
@@ -123,11 +137,17 @@ prj_open_files_pattern_filter__rec(Application_Links *app, String8 path, Prj_Pat
             if ((flags & PrjOpenFileFlag_Recursive) == 0){
                 continue;
             }
+
             if (prj_match_in_pattern_list(file_name, blacklist)){
                 continue;
             }
+
             String8 new_path = push_u8_stringf(scratch, "%.*s%.*s/", string_expand(path), string_expand(file_name));
-            prj_open_files_pattern_filter__rec(app, new_path, whitelist, blacklist, flags);
+			if (string8_match_in_list(new_path, blacklist_paths)) {
+				continue;
+			}
+			
+			prj_open_files_pattern_filter__rec(app, new_path, whitelist, blacklist, blacklist_paths, flags);
         }
         else{
             if (!prj_match_in_pattern_list(file_name, whitelist)){
@@ -143,14 +163,14 @@ prj_open_files_pattern_filter__rec(Application_Links *app, String8 path, Prj_Pat
 }
 
 function void
-prj_open_files_pattern_filter(Application_Links *app, String8 dir, Prj_Pattern_List whitelist, Prj_Pattern_List blacklist, Prj_Open_File_Flags flags){
+prj_open_files_pattern_filter(Application_Links *app, String8 dir, Prj_Pattern_List whitelist, Prj_Pattern_List blacklist, String8List blacklist_paths, Prj_Open_File_Flags flags){
     ProfileScope(app, "open all files in directory pattern");
     Scratch_Block scratch(app);
     String8 directory = dir;
     if (!character_is_slash(string_get_character(directory, directory.size - 1))){
         directory = push_u8_stringf(scratch, "%.*s/", string_expand(dir));
     }
-    prj_open_files_pattern_filter__rec(app, directory, whitelist, blacklist, flags);
+    prj_open_files_pattern_filter__rec(app, directory, whitelist, blacklist, blacklist_paths, flags);
 }
 
 function void
@@ -163,7 +183,8 @@ prj_open_all_files_with_ext_in_hot(Application_Links *app, String8Array array, P
     }
     Prj_Pattern_List whitelist = prj_pattern_list_from_extension_array(scratch, array);
     Prj_Pattern_List blacklist = prj_get_standard_blacklist(scratch);
-    prj_open_files_pattern_filter(app, hot, whitelist, blacklist, flags);
+	String8List empty_blacklist = {};
+    prj_open_files_pattern_filter(app, hot, whitelist, blacklist, empty_blacklist, flags);
 }
 
 ////////////////////////////////
@@ -918,7 +939,6 @@ CUSTOM_DOC("Looks for a project.4coder file in the current directory and tries t
     
     // NOTE(allen): Open All Project Files
     Variable_Handle load_paths_var = vars_read_key(prj_var, vars_save_string_lit("load_paths"));
-    Variable_Handle load_paths_os_var = vars_read_key(load_paths_var, vars_save_string_lit(OS_NAME));
     
     String_ID path_id = vars_save_string_lit("path");
     String_ID recursive_id = vars_save_string_lit("recursive");
@@ -926,11 +946,27 @@ CUSTOM_DOC("Looks for a project.4coder file in the current directory and tries t
     
     Variable_Handle whitelist_var = vars_read_key(prj_var, vars_save_string_lit("patterns"));
     Variable_Handle blacklist_var = vars_read_key(prj_var, vars_save_string_lit("blacklist_patterns"));
-    
+    Variable_Handle blacklist_paths_var = vars_read_key(prj_var, vars_save_string_lit("blacklist_paths"));
+
     Prj_Pattern_List whitelist = prj_pattern_list_from_var(scratch, whitelist_var);
     Prj_Pattern_List blacklist = prj_pattern_list_from_var(scratch, blacklist_var);
+
+	String8 prj_dir = prj_path_from_project(scratch, prj_var);
+
+	String8List blacklist_paths = {};    
+	for (Vars_Children(blacklist_path_var, blacklist_paths_var)){
+		String8 path = vars_string_from_var(scratch, blacklist_path_var);
+
+		String8List file_dir_list = {};
+		string_list_push(scratch, &file_dir_list, prj_dir);
+		string_list_push_overlap(scratch, &file_dir_list, '/', path);
+		string_list_push_overlap(scratch, &file_dir_list, '/', SCu8());
+		String_Const_u8 str = string_list_flatten(scratch, file_dir_list, StringFill_NullTerminate);
+
+		string_list_push(scratch, &blacklist_paths, str);
+    }
     
-    for (Variable_Handle load_path_var = vars_first_child(load_paths_os_var);
+    for (Variable_Handle load_path_var = vars_first_child(load_paths_var);
          !vars_is_nil(load_path_var);
          load_path_var = vars_next_sibling(load_path_var)){
         Variable_Handle path_var = vars_read_key(load_path_var, path_id);
@@ -938,9 +974,7 @@ CUSTOM_DOC("Looks for a project.4coder file in the current directory and tries t
         Variable_Handle relative_var = vars_read_key(load_path_var, relative_id);
         
         String8 path = vars_string_from_var(scratch, path_var);
-        b32 recursive = vars_b32_from_var(recursive_var);
-        b32 relative = vars_b32_from_var(relative_var);
-        
+        b32 recursive = vars_b32_from_var(recursive_var);        
         
         u32 flags = 0;
         if (recursive){
@@ -948,17 +982,14 @@ CUSTOM_DOC("Looks for a project.4coder file in the current directory and tries t
         }
         
         String8 file_dir = path;
-        if (relative){
-            String8 prj_dir = prj_path_from_project(scratch, prj_var);
             
-            String8List file_dir_list = {};
-            string_list_push(scratch, &file_dir_list, prj_dir);
-            string_list_push_overlap(scratch, &file_dir_list, '/', path);
-            string_list_push_overlap(scratch, &file_dir_list, '/', SCu8());
-            file_dir = string_list_flatten(scratch, file_dir_list, StringFill_NullTerminate);
-        }
+		String8List file_dir_list = {};
+		string_list_push(scratch, &file_dir_list, prj_dir);
+		string_list_push_overlap(scratch, &file_dir_list, '/', path);
+		string_list_push_overlap(scratch, &file_dir_list, '/', SCu8());
+		file_dir = string_list_flatten(scratch, file_dir_list, StringFill_NullTerminate);
         
-        prj_open_files_pattern_filter(app, file_dir, whitelist, blacklist, flags);
+        prj_open_files_pattern_filter(app, file_dir, whitelist, blacklist, blacklist_paths, flags);
     }
     
     // NOTE(allen): Set Window Title

@@ -65,7 +65,7 @@ function Prj_Pattern_List prj_get_standard_blacklist(Arena *arena);
 function b32  prj_match_in_pattern_list(String8 string, Prj_Pattern_List list);
 
 function void prj_close_files_with_ext(Application_Links *app, String8Array extension_array);
-function void prj_open_files_pattern_filter(Application_Links *app, String8 dir, Prj_Pattern_List whitelist, Prj_Pattern_List blacklist, Prj_Open_File_Flags flags);
+function void prj_open_files_pattern_filter(Application_Links *app, String8 dir, Prj_Pattern_List whitelist, Prj_Pattern_List blacklist, String8List blacklist_paths, Prj_Open_File_Flags flags);
 function void prj_open_all_files_with_ext_in_hot(Application_Links *app, String8Array array, Prj_Open_File_Flags flags);
 
 ////////////////////////////////
