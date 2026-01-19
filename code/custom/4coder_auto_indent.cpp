@@ -381,8 +381,10 @@ auto_indent_buffer(Application_Links *app, Buffer_ID buffer, Range_i64 pos, Inde
         }
         line_numbers = get_line_range_from_pos_range(app, buffer, pos);
         
-        i64 *indentations = get_indentation_array(app, scratch, buffer, line_numbers, flags, tab_width, indent_width);
-        set_line_indents(app, scratch, buffer, line_numbers, indentations, flags, tab_width);
+        i64 *indentations = jj_get_indentation_array(app, scratch, buffer, line_numbers, flags, tab_width, indent_width);
+		//i64 *indentations = get_indentation_array(app, scratch, buffer, line_numbers, flags, tab_width, indent_width);
+
+        set_line_indents(app, scratch, buffer, line_numbers, new_indentations, flags, tab_width);
     }
     
     return(result);

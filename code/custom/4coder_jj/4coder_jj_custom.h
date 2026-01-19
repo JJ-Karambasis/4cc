@@ -2,6 +2,7 @@
 #define FCODER_JJ_CUSTOM_H
 
 #include "4coder_jj_colors.h"
+#include "4coder_jj_auto_indent.h"
 
 struct fcoder_jj_custom {
 	ARGB_Color modal_margin_active_color;

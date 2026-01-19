@@ -1,4 +1,5 @@
 #include "4coder_jj_colors.cpp"
+#include "4coder_jj_auto_indent.cpp"
 
 function void set_current_mapid( Application_Links* app, Command_Map_ID mapid ) {
     View_ID view = get_active_view( app, 0 );
@@ -160,11 +161,11 @@ BUFFER_HOOK_SIG(fcoder_jj_begin_buffer) {
     
     {
         b32 *wrap_lines_ptr = scope_attachment(app, scope, buffer_wrap_lines, b32);
-        *wrap_lines_ptr = wrap_lines;
+        *wrap_lines_ptr = use_lexer ? false : wrap_lines;
     }
     
     if (use_lexer){
-        buffer_set_layout(app, buffer_id, layout_virt_indent_index_generic);
+        buffer_set_layout(app, buffer_id, layout_virt_indent_literal_generic);
     }
     else {
         if (treat_as_code){
